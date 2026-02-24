@@ -227,6 +227,40 @@
       text-transform: uppercase;
     }
 
+    .hero-profile {
+      position: absolute;
+      right: 80px;
+      bottom: 60px;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.9s forwards;
+    }
+
+    .hero-profile img {
+      width: 220px;
+      height: 290px;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 120px 120px 40px 40px;
+      border: 2px solid rgba(200,169,110,0.3);
+      filter: grayscale(15%);
+      box-shadow: 0 0 60px rgba(200,169,110,0.12), 0 30px 80px rgba(0,0,0,0.5);
+    }
+
+    .hero-profile::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 123px 123px 43px 43px;
+      background: linear-gradient(135deg, var(--accent), transparent, var(--accent2));
+      z-index: -1;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 900px) {
+      .hero-profile { display: none; }
+    }
+
     .scroll-line {
       width: 60px;
       height: 1px;
@@ -978,6 +1012,9 @@
         Scroll to explore
       </div>
     </div>
+    <div class="hero-profile">
+      <img src="profile.png" alt="Ahron Calucin" />
+    </div>
   </section>
 
   <hr class="divider">
@@ -1217,12 +1254,12 @@ createApp({
       comments: [],
       loadingComments: true,
       gallery: [
-        { src: '', caption: 'Add your photo here' },
-        { src: '', caption: 'Add your photo here' },
-        { src: '', caption: 'Add your photo here' },
-        { src: '', caption: 'Add your photo here' },
-        { src: '', caption: 'Add your photo here' },
-        { src: '', caption: 'Add your photo here' },
+        { src: 'gallery1.png', caption: 'Mountain road adventure' },
+        { src: 'gallery2.png', caption: 'Wild monkeys spotted!' },
+        { src: 'gallery3.png', caption: 'Open road, open sky' },
+        { src: 'gallery4.png', caption: 'Cliffside sea view' },
+        { src: 'gallery5.png', caption: 'Ride by the ocean' },
+        { src: 'gallery6.png', caption: 'Solo highway ride' },
       ]
     }
   },
