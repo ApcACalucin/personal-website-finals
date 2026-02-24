@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ahron Calucin — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #10101a;
+      --bg3: #16162a;
+      --accent: #c8a96e;
+      --accent2: #8b6fd6;
+      --text: #e8e6f0;
+      --muted: #7a7890;
+      --border: rgba(200,169,110,0.15);
+      --glow: rgba(200,169,110,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom Cursor */
+    .cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.3s, height 0.3s, opacity 0.3s;
+      opacity: 0.5;
+    }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(20px);
+      background: rgba(10,10,15,0.7);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px; height: 1.5px;
+      background: var(--accent);
+      transition: all 0.3s;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 40px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 50%, rgba(139,111,214,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, rgba(200,169,110,0.05) 0%, transparent 60%);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(200,169,110,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,169,110,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(52px, 8vw, 110px);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-bio {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+
+    .hero-tag {
+      padding: 6px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.05em;
+      background: var(--glow);
+    }
+
+    .hero-scroll {
+      opacity: 0;
+      animation: fadeUp 0.8s 1s forwards;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleX(1); opacity: 1; }
+      50% { transform: scaleX(0.3); opacity: 0.3; }
+    }
+
+    /* SECTIONS */
+    .section {
+      padding: 100px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 30px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 60px;
+    }
+
+    .section-title em { color: var(--accent); font-style: italic; }
+
+    /* ABOUT */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    .about-text strong { color: var(--text); }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(200,169,110,0.4);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* SKILLS */
+    .skills-full { max-width: 1100px; margin: 0 auto; padding: 100px 40px; }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .skill-cat {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .skill-cat:hover {
+      transform: translateY(-4px);
+      border-color: rgba(200,169,110,0.35);
+    }
+
+    .skill-cat-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .skill-cat-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .skill-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-pill {
+      padding: 4px 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* EDUCATION */
+    .edu-timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .edu-timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 8px; bottom: 8px;
+      width: 1px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2), transparent);
+    }
+
+    .edu-item {
+      position: relative;
+      margin-bottom: 48px;
+      padding: 32px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .edu-item::before {
+      content: '';
+      position: absolute;
+      left: -40px; top: 32px;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 20px var(--accent);
+    }
+
+    .edu-year {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .edu-school {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .edu-detail {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .edu-badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 14px;
+      background: rgba(200,169,110,0.1);
+      border: 1px solid rgba(200,169,110,0.3);
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* HOBBIES */
+    .hobbies-bento {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .hobby-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 24px;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s, background 0.3s;
+      cursor: default;
+    }
+
+    .hobby-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: rgba(200,169,110,0.4);
+      background: var(--bg3);
+    }
+
+    .hobby-icon { font-size: 36px; margin-bottom: 14px; }
+
+    .hobby-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .hobby-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* GOALS */
+    .goals-section {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .goals-section::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(200,169,110,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .goals-section::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(139,111,214,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .goals-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .goals-quote em { color: var(--accent); font-style: italic; }
+
+    .goals-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .goal-chip {
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .goal-dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* GALLERY */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .gallery-item {
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      position: relative;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s, border-color 0.3s;
+      group: true;
+    }
+
+    .gallery-item:hover {
+      transform: scale(1.02);
+      border-color: rgba(200,169,110,0.4);
+    }
+
+    .gallery-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .gallery-item:hover img { transform: scale(1.07); }
+
+    .gallery-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+    }
+
+    .gallery-placeholder-icon { font-size: 28px; opacity: 0.5; }
+    .gallery-placeholder-text { font-size: 12px; font-family: 'Space Mono', monospace; }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(10,10,15,0.8), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+    }
+
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+    .gallery-caption {
+      font-size: 13px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* GUESTBOOK */
+    .guestbook-section {
+      padding: 100px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .guestbook-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .guestbook-form-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+    }
+
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .form-group { margin-bottom: 18px; }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: rgba(200,169,110,0.5);
+      box-shadow: 0 0 0 3px rgba(200,169,110,0.06);
+    }
+
+    .form-group textarea { height: 100px; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--accent), #a8854a);
+      border: none;
+      border-radius: 10px;
+      color: #0a0a0f;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .btn-submit:hover { opacity: 0.85; transform: translateY(-2px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .msg-success {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: rgba(200,169,110,0.1);
+      border: 1px solid rgba(200,169,110,0.25);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .comments-wrap h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .comment-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .comment-card:hover { border-color: rgba(200,169,110,0.3); }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .comment-avatar {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--bg);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .comment-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .comment-date {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      margin-left: auto;
+    }
+
+    .comment-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .loading-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 20px 0;
+    }
+
+    .loading-dots span {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: dot 1.2s ease-in-out infinite;
+    }
+
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dot {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-8px); opacity: 1; }
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      font-family: 'Space Mono', monospace;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* MOBILE NAV */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,10,15,0.97);
+      z-index: 99;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      backdrop-filter: blur(20px);
+    }
+
+    .mobile-menu.open { display: flex; }
+
+    .mobile-menu a {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .mobile-menu a:hover { color: var(--accent); }
+
+    .mobile-close {
+      position: absolute;
+      top: 24px; right: 40px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .about-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .hobbies-bento { grid-template-columns: repeat(2, 1fr); }
+      .guestbook-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      footer { flex-direction: column; text-align: center; }
+      .goals-section { padding: 40px 28px; }
+    }
+
+    @media (max-width: 560px) {
+      nav { padding: 16px 20px; }
+      .hero { padding: 100px 20px 60px; }
+      .section, .skills-full, .guestbook-section { padding: 64px 20px; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .hobbies-bento { grid-template-columns: repeat(2, 1fr); }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+      footer { padding: 40px 20px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- CURSOR -->
+  <div class="cursor" :style="{ left: cx + 'px', top: cy + 'px' }"></div>
+  <div class="cursor-ring" :style="{ left: rx + 'px', top: ry + 'px' }"></div>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" :class="{ open: mobileOpen }">
+    <button class="mobile-close" @click="mobileOpen = false">✕</button>
+    <a href="#about" @click="mobileOpen = false">About</a>
+    <a href="#education" @click="mobileOpen = false">Education</a>
+    <a href="#skills" @click="mobileOpen = false">Skills</a>
+    <a href="#hobbies" @click="mobileOpen = false">Hobbies</a>
+    <a href="#goals" @click="mobileOpen = false">Dreams</a>
+    <a href="#gallery" @click="mobileOpen = false">Gallery</a>
+    <a href="#guestbook" @click="mobileOpen = false">Guestbook</a>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Ahron.dev</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#hobbies">Hobbies</a></li>
+      <li><a href="#goals">Dreams</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#guestbook">Guestbook</a></li>
+    </ul>
+    <button class="nav-hamburger" @click="mobileOpen = true">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">✦ Welcome to my world</div>
+      <h1 class="hero-name">Ahron<br><em>Calucin.</em></h1>
+      <p class="hero-bio">
+        BS Information Technology student at Asia Pacific College — building creative solutions, one line of code at a time. Passionate about turning ideas into meaningful digital experiences.
+      </p>
+      <div class="hero-tags">
+        <span class="hero-tag">IT Student</span>
+        <span class="hero-tag">Web Developer</span>
+        <span class="hero-tag">Creative Thinker</span>
+        <span class="hero-tag">Problem Solver</span>
+      </div>
+      <div class="hero-scroll">
+        <div class="scroll-line"></div>
+        Scroll to explore
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="section-label reveal">About Me</div>
+    <h2 class="section-title reveal">A curious mind<br>crafting the <em>future.</em></h2>
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p>Hello! I'm <strong>Ahron Calucin</strong>, a 2nd year <strong>BS Information Technology</strong> student at Asia Pacific College. I'm passionate about technology and how it shapes our future.</p>
+        <p>I enjoy building web applications, exploring new frameworks, and solving real-world problems through code. I believe great software is not just functional — it's beautiful and intuitive.</p>
+        <p>When I'm not coding, you'll find me gaming, behind a camera lens, or planning my next adventure.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <div class="stat-num">2nd</div>
+          <div class="stat-label">Year Level</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">3+</div>
+          <div class="stat-label">Languages</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">1</div>
+          <div class="stat-label">Capstone Defended</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Ideas to Build</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- SKILLS -->
+  <section id="skills" class="skills-full">
+    <div class="section-label reveal">Technical Skills</div>
+    <h2 class="section-title reveal">The tools<br>of my <em>craft.</em></h2>
+    <div class="skills-grid reveal">
+      <div class="skill-cat">
+        <div class="skill-cat-icon">🌐</div>
+        <div class="skill-cat-name">Web Development</div>
+        <div class="skill-pills">
+          <span class="skill-pill">HTML5</span>
+          <span class="skill-pill">CSS3</span>
+          <span class="skill-pill">JavaScript</span>
+          <span class="skill-pill">Vue.js</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <div class="skill-cat-icon">⚙️</div>
+        <div class="skill-cat-name">Programming</div>
+        <div class="skill-pills">
+          <span class="skill-pill">Java</span>
+          <span class="skill-pill">Python</span>
+          <span class="skill-pill">REST API</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <div class="skill-cat-icon">🛠️</div>
+        <div class="skill-cat-name">Tools & Platforms</div>
+        <div class="skill-pills">
+          <span class="skill-pill">Supabase</span>
+          <span class="skill-pill">Vercel</span>
+          <span class="skill-pill">Git</span>
+          <span class="skill-pill">GitHub</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- EDUCATION -->
+  <section id="education" class="section">
+    <div class="section-label reveal">Education</div>
+    <h2 class="section-title reveal">My academic<br><em>journey.</em></h2>
+    <div class="edu-timeline reveal">
+      <div class="edu-item">
+        <div class="edu-year">2023 — Present</div>
+        <div class="edu-school">Asia Pacific College</div>
+        <div class="edu-detail">BS Information Technology — 2nd Year Student. Building a strong foundation in software development, web technologies, and IT principles.</div>
+        <span class="edu-badge">✓ Capstone Defended</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- HOBBIES -->
+  <section id="hobbies" class="section">
+    <div class="section-label reveal">Hobbies</div>
+    <h2 class="section-title reveal">Life beyond<br>the <em>screen.</em></h2>
+    <div class="hobbies-bento reveal">
+      <div class="hobby-card">
+        <div class="hobby-icon">🎮</div>
+        <div class="hobby-name">Gaming</div>
+        <div class="hobby-sub">Strategic games & immersive RPGs</div>
+      </div>
+      <div class="hobby-card">
+        <div class="hobby-icon">💻</div>
+        <div class="hobby-name">Coding</div>
+        <div class="hobby-sub">Building side projects for fun</div>
+      </div>
+      <div class="hobby-card">
+        <div class="hobby-icon">📷</div>
+        <div class="hobby-name">Photography</div>
+        <div class="hobby-sub">Capturing moments & perspectives</div>
+      </div>
+      <div class="hobby-card">
+        <div class="hobby-icon">✈️</div>
+        <div class="hobby-name">Traveling</div>
+        <div class="hobby-sub">Exploring new places & cultures</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- GOALS -->
+  <section id="goals" class="section">
+    <div class="section-label reveal">Dreams & Goals</div>
+    <h2 class="section-title reveal">Where I'm<br><em>headed.</em></h2>
+    <div class="goals-section reveal">
+      <div class="goals-quote">
+        "To become a <em>Software Developer</em> and use technology to create sustainable solutions for the community."
+      </div>
+      <div class="goals-list">
+        <span class="goal-chip"><span class="goal-dot"></span>Land a Software Dev role</span>
+        <span class="goal-chip"><span class="goal-dot"></span>Build impactful products</span>
+        <span class="goal-chip"><span class="goal-dot"></span>Contribute to open source</span>
+        <span class="goal-chip"><span class="goal-dot"></span>Help the community through tech</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- GALLERY -->
+  <section id="gallery" class="section">
+    <div class="section-label reveal">Gallery</div>
+    <h2 class="section-title reveal">My captured<br><em>moments.</em></h2>
+    <div class="gallery-grid reveal">
+      <div class="gallery-item" v-for="(img, i) in gallery" :key="i">
+        <img v-if="img.src" :src="img.src" :alt="img.caption" />
+        <div v-else class="gallery-placeholder">
+          <div class="gallery-placeholder-icon">📷</div>
+          <div class="gallery-placeholder-text">Photo {{ i + 1 }}</div>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-caption">{{ img.caption || 'Add your caption here' }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- GUESTBOOK -->
+  <section id="guestbook" class="guestbook-section">
+    <div class="section-label reveal">Guestbook</div>
+    <h2 class="section-title reveal">Leave me a<br><em>message.</em></h2>
+    <div class="guestbook-grid">
+
+      <!-- FORM -->
+      <div class="guestbook-form-wrap reveal">
+        <div class="form-title">Sign the Guestbook ✍️</div>
+        <div class="form-group">
+          <label>Your Name</label>
+          <input v-model="form.name" type="text" placeholder="e.g. Jane Santos" />
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea v-model="form.message" placeholder="Write something nice..."></textarea>
+        </div>
+        <button class="btn-submit" @click="submitComment" :disabled="submitting || !form.name || !form.message">
+          {{ submitting ? 'Sending...' : 'Send Message →' }}
+        </button>
+        <div v-if="submitMsg" class="msg-success">{{ submitMsg }}</div>
+      </div>
+
+      <!-- COMMENTS -->
+      <div class="comments-wrap reveal">
+        <h3>What people are saying 💬</h3>
+        <div v-if="loadingComments" class="loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div v-else-if="comments.length === 0" style="color: var(--muted); font-size: 14px; padding: 20px 0;">
+          No messages yet. Be the first! 👋
+        </div>
+        <div v-else>
+          <div class="comment-card" v-for="c in comments" :key="c.id">
+            <div class="comment-header">
+              <div class="comment-avatar">{{ c.name.charAt(0).toUpperCase() }}</div>
+              <div class="comment-name">{{ c.name }}</div>
+              <div class="comment-date">{{ formatDate(c.created_at) }}</div>
+            </div>
+            <div class="comment-text">{{ c.message }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-name">Ahron Calucin</div>
+    <div class="footer-copy">© 2025 — BS IT Student, Asia Pacific College</div>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#guestbook">Guestbook</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      mobileOpen: false,
+      cx: -100, cy: -100,
+      rx: -100, ry: -100,
+      // REPLACE with your Supabase URL and anon key
+      supabaseUrl: 'YOUR_SUPABASE_URL',
+      supabaseKey: 'YOUR_SUPABASE_ANON_KEY',
+      form: { name: '', message: '' },
+      submitting: false,
+      submitMsg: '',
+      comments: [],
+      loadingComments: true,
+      gallery: [
+        { src: '', caption: 'Add your photo here' },
+        { src: '', caption: 'Add your photo here' },
+        { src: '', caption: 'Add your photo here' },
+        { src: '', caption: 'Add your photo here' },
+        { src: '', caption: 'Add your photo here' },
+        { src: '', caption: 'Add your photo here' },
+      ]
+    }
+  },
+  mounted() {
+    // Cursor
+    document.addEventListener('mousemove', (e) => {
+      this.cx = e.clientX; this.cy = e.clientY;
+      setTimeout(() => { this.rx = e.clientX; this.ry = e.clientY; }, 80);
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Load comments
+    this.loadComments();
+  },
+  methods: {
+    formatDate(d) {
+      if (!d) return '';
+      const date = new Date(d);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    },
+    async loadComments() {
+      this.loadingComments = true;
+      try {
+        const res = await fetch(
+          `${this.supabaseUrl}/rest/v1/guestbook?order=created_at.desc&limit=20`,
+          { headers: { 'apikey': this.supabaseKey, 'Authorization': `Bearer ${this.supabaseKey}` } }
+        );
+        if (res.ok) { this.comments = await res.json(); }
+      } catch(e) {
+        console.log('Supabase not configured yet');
+        // Demo comments so it looks good before Supabase is set up
+        this.comments = [
+          { id: 1, name: 'Prof. Reyes', message: 'Amazing portfolio, Ahron! Very impressive work.', created_at: new Date().toISOString() },
+          { id: 2, name: 'Classmate Juan', message: 'This looks so cool! Great design bro 🔥', created_at: new Date().toISOString() }
+        ];
+      }
+      this.loadingComments = false;
+    },
+    async submitComment() {
+      if (!this.form.name.trim() || !this.form.message.trim()) return;
+      this.submitting = true;
+      this.submitMsg = '';
+      try {
+        const res = await fetch(
+          `${this.supabaseUrl}/rest/v1/guestbook`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': this.supabaseKey,
+              'Authorization': `Bearer ${this.supabaseKey}`,
+              'Prefer': 'return=representation'
+            },
+            body: JSON.stringify({ name: this.form.name, message: this.form.message })
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          this.comments.unshift(data[0]);
+          this.submitMsg = '✓ Message sent! Thanks for signing the guestbook.';
+          this.form = { name: '', message: '' };
+        } else {
+          // Demo mode fallback
+          this.comments.unshift({ id: Date.now(), name: this.form.name, message: this.form.message, created_at: new Date().toISOString() });
+          this.submitMsg = '✓ Message added! (Connect Supabase to persist data)';
+          this.form = { name: '', message: '' };
+        }
+      } catch(e) {
+        // Demo mode
+        this.comments.unshift({ id: Date.now(), name: this.form.name, message: this.form.message, created_at: new Date().toISOString() });
+        this.submitMsg = '✓ Message added! (Connect Supabase to persist data)';
+        this.form = { name: '', message: '' };
+      }
+      this.submitting = false;
+      setTimeout(() => { this.submitMsg = ''; }, 5000);
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
